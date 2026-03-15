@@ -1,0 +1,12 @@
+{
+  "_comment": "Pinned Claude Code plugin versions. Update 'version' field after verifying each works.",
+  "plugins": [
+    { "name": "superpowers",   "version": null, "description": "Skill system, brainstorming, planning, TDD" },
+    { "name": "context7",      "version": null, "description": "Library documentation lookup" },
+    { "name": "playwright",    "version": null, "description": "Browser automation in Claude" },
+    { "name": "github",        "version": null, "description": "GitHub integration — repos, PRs, issues" },
+    { "name": "skill-creator", "version": null, "description": "Create and manage custom skills" },
+    { "name": "ralph-loop",    "version": null, "description": "Recursive improvement loop" },
+    { "name": "greptile",      "version": null, "description": "Codebase search and understanding" }
+  ]
+}

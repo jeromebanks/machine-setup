@@ -1,0 +1,61 @@
+{
+  "_comment": "MCP server configurations. Installed by 08-claude-ecosystem.sh via 'claude mcp add'.",
+  "servers": [
+    {
+      "name": "filesystem",
+      "package": "@modelcontextprotocol/server-filesystem",
+      "description": "Local file read/write access",
+      "args": ["--allowed-directory", "~"]
+    },
+    {
+      "name": "github",
+      "package": "@modelcontextprotocol/server-github",
+      "description": "GitHub API — repos, PRs, issues",
+      "env": { "GITHUB_TOKEN": "$GITHUB_TOKEN" }
+    },
+    {
+      "name": "web-search",
+      "package": "@modelcontextprotocol/server-brave-search",
+      "description": "Web search via Brave Search API",
+      "env": { "BRAVE_API_KEY": "$BRAVE_API_KEY" }
+    },
+    {
+      "name": "postgres",
+      "package": "@modelcontextprotocol/server-postgres",
+      "description": "PostgreSQL database access",
+      "env": { "DATABASE_URL": "$DATABASE_URL" }
+    },
+    {
+      "name": "sqlite",
+      "package": "@modelcontextprotocol/server-sqlite",
+      "description": "SQLite database access",
+      "args": ["--db-path", "~/dev/local.db"]
+    },
+    {
+      "name": "duckdb",
+      "package": "mcp-server-duckdb",
+      "description": "Analytical SQL on CSV/Parquet files"
+    },
+    {
+      "name": "supabase",
+      "package": "@supabase/mcp-server-supabase",
+      "description": "Supabase project + database access",
+      "env": { "SUPABASE_ACCESS_TOKEN": "$SUPABASE_ACCESS_TOKEN" }
+    },
+    {
+      "name": "playwright",
+      "package": "@modelcontextprotocol/server-playwright",
+      "description": "Browser automation"
+    },
+    {
+      "name": "puppeteer",
+      "package": "@modelcontextprotocol/server-puppeteer",
+      "description": "Headless browser control"
+    },
+    {
+      "name": "tree-sitter",
+      "package": "mcp-server-tree-sitter",
+      "description": "Code parsing / AST analysis"
+    }
+  ]
+}
