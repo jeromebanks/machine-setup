@@ -1,0 +1,23 @@
+[user]
+    name = {{ promptStringOnce . "git_name" "Git full name" }}
+    email = {{ promptStringOnce . "git_email" "Git email" }}
+
+[core]
+    editor = nvim
+    autocrlf = input
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[push]
+    default = current
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    lg = log --oneline --graph --decorate --all
+    unstage = reset HEAD --
