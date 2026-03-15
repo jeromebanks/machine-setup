@@ -12,7 +12,7 @@ Invoke when the user wants to connect a Chromebook, Linux machine, or iPad to th
 
 ```bash
 # In ChromeOS Linux terminal:
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/machine-setup/main/clients/chromebook-setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeromebanks/machine-setup/main/clients/chromebook-setup.sh | bash
 ```
 
 Or if repo is cloned locally:

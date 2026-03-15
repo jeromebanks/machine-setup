@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPO_OWNER="YOUR_USERNAME"  # Update before sharing
+REPO_OWNER="jeromebanks"  # Update before sharing
 MAC_TAILSCALE_HOST="${MAC_TAILSCALE_HOST:-}"  # Set or prompted below
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }

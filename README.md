@@ -7,7 +7,7 @@ Semi-automated Mac development setup. Covers AI coding tools (Claude Code, OpenA
 ### New Mac
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/machine-setup.git ~/dev/machine-setup
+git clone https://github.com/jeromebanks/machine-setup.git ~/dev/machine-setup
 cd ~/dev/machine-setup
 chmod +x bootstrap.sh
 ./bootstrap.sh
@@ -26,7 +26,7 @@ chmod +x bootstrap.sh
 
 ```bash
 # In ChromeOS Linux (Crostini terminal):
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/machine-setup/main/clients/chromebook-setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeromebanks/machine-setup/main/clients/chromebook-setup.sh | bash
 ```
 
 ## What's Installed
