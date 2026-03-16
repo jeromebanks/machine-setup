@@ -126,7 +126,7 @@ API keys are stored in `~/.zshrc.local` (never committed).
 ## Connecting from Other Devices
 
 - **Chromebook** — see [`CHROMEBOOK_QUICKSTART.md`](CHROMEBOOK_QUICKSTART.md)
-- **iPad** — see [`clients/ipad-guide.md`](clients/ipad-guide.md)
+- **iPad** — see [`IPAD_QUICKSTART.md`](IPAD_QUICKSTART.md)
 - **Any Linux machine** — run `bash clients/generic-linux.sh`
 
 ## Rollback
