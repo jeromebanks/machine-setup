@@ -33,6 +33,15 @@ done
 
 export DRY_RUN SCRIPT_DIR
 
+# --- Logging ---
+# Tee all output (stdout + stderr) to a dated log file under logs/.
+# The terminal still shows everything in real time.
+LOG_DIR="$SCRIPT_DIR/logs"
+LOG_FILE="$LOG_DIR/$(date '+%Y-%m-%d_%H%M%S')_bootstrap${ONLY:+_$ONLY}.log"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_FILE") 2>&1
+log_info "Logging to: $LOG_FILE"
+
 # --- Sudo keepalive: ask once, stay elevated for the full run ---
 # A background heartbeat refreshes the credential every 25 s so subsequent
 # sudo calls (e.g. cask pkg installers) don't re-prompt.

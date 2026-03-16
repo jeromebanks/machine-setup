@@ -1,5 +1,6 @@
-# Backups — local only, never committed
+# Backups and logs — local only, never committed
 backups/
+logs/*.log
 
 # Machine-local secrets
 .zshrc.local
