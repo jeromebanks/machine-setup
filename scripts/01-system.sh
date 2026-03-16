@@ -43,7 +43,7 @@ fi
 # --- Brewfile ---
 log_step 3 "Brew bundle (Brewfile)"
 if [[ "$DRY_RUN" != "true" ]]; then
-  brew bundle --file="$SCRIPT_DIR/Brewfile" --no-lock
+  brew bundle --file="$SCRIPT_DIR/Brewfile"
 fi
 
 # --- macOS System Preferences ---
