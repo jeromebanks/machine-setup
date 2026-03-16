@@ -85,8 +85,21 @@ else
   [[ "$DRY_RUN" != "true" ]] && brew install --cask cursor
 fi
 
+# --- Google Gemini CLI ---
+log_step 4 "Google Gemini CLI"
+if command_exists gemini; then
+  log_success "Gemini CLI already installed: $(gemini --version 2>/dev/null || echo 'installed')"
+else
+  log_info "Installing Gemini CLI..."
+  [[ "$DRY_RUN" != "true" ]] && npm install -g @google/gemini-cli
+fi
+
+if [[ "$DRY_RUN" != "true" ]]; then
+  write_api_key "GEMINI_API_KEY" "Google Gemini"
+fi
+
 # --- GitHub Copilot CLI ---
-log_step 4 "GitHub Copilot CLI"
+log_step 5 "GitHub Copilot CLI"
 if command_exists gh && gh extension list 2>/dev/null | grep -q "copilot"; then
   log_success "GitHub Copilot CLI already installed"
 else
