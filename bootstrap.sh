@@ -33,6 +33,19 @@ done
 
 export DRY_RUN SCRIPT_DIR
 
+# --- Sudo keepalive ---
+# Ask for sudo once upfront; a background heartbeat refreshes the credential
+# every 60 s so subsequent sudo calls in module scripts never re-prompt.
+# Nothing is written to disk. The heartbeat exits automatically when this
+# script exits (kill -0 $$ checks whether the parent PID is still alive).
+if [[ "$DRY_RUN" != "true" ]]; then
+  log_info "Some steps require administrator privileges. You will be asked once."
+  sudo -v || { log_error "sudo authentication failed — aborting."; exit 1; }
+  (while kill -0 $$ 2>/dev/null; do sudo -n true; sleep 60; done) &
+  SUDO_KEEPALIVE_PID=$!
+  trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT
+fi
+
 # --- Module map: name -> script ---
 get_module_script() {
   case "$1" in
