@@ -43,9 +43,6 @@ fi
 # --- Brewfile ---
 log_step 3 "Brew bundle (Brewfile)"
 if [[ "$DRY_RUN" != "true" ]]; then
-  # Refresh sudo credential immediately before bundle so pkg-based casks
-  # (e.g. Docker Desktop) don't prompt mid-install.
-  sudo -v 2>/dev/null || true
   brew bundle --file="$SCRIPT_DIR/Brewfile"
 fi
 

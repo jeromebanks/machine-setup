@@ -42,29 +42,36 @@ mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
 log_info "Logging to: $LOG_FILE"
 
-# --- Sudo keepalive: ask once, stay elevated for the full run ---
-# A background heartbeat refreshes the credential every 25 s so subsequent
-# sudo calls (e.g. cask pkg installers) don't re-prompt.
-# We capture the TTY explicitly so the background process refreshes the same
-# ticket that child processes (brew internals) will check.
+# --- Sudo: ask once, cache in memory, pipe to every sudo call ---
+#
+# Problem: brew spawns child processes (pkg installers, xattr, etc.) that call
+# /usr/bin/sudo directly. Those processes don't share the shell's sudo
+# credential cache, so they re-prompt — even with a keepalive running.
+#
+# Solution: capture the password once into a shell variable (never written to
+# disk), then override 'sudo' with a wrapper that pipes it via -S.  The
+# wrapper is exported so every module script inherits it automatically.
+#
+# The < <(printf ...; cat) idiom passes the password as the first stdin line
+# (consumed by sudo -S), then forwards any real stdin to the command — so
+# patterns like `echo content | sudo tee /file` continue to work correctly.
 if [[ "$DRY_RUN" != "true" ]]; then
-  log_info "Some steps require administrator privileges. You will be asked once."
-  sudo -v || { log_error "sudo authentication failed — aborting."; exit 1; }
+  # Prompt directly on /dev/tty so the password line never goes through tee
+  printf 'Administrator password (asked once): ' >/dev/tty
+  IFS= read -rs _SUDO_PASS </dev/tty
+  printf '\n' >/dev/tty
 
-  _BS_TTY="$(tty 2>/dev/null || true)"
-  if [[ -n "$_BS_TTY" ]]; then
-    (while kill -0 $$ 2>/dev/null; do
-      sudo -n true <"$_BS_TTY" 2>/dev/null || true
-      sleep 25
-    done) &
-  else
-    (while kill -0 $$ 2>/dev/null; do
-      sudo -n true 2>/dev/null || true
-      sleep 25
-    done) &
+  if ! printf '%s\n' "$_SUDO_PASS" | command sudo -S -v -p "" 2>/dev/null; then
+    log_error "sudo authentication failed — aborting."
+    exit 1
   fi
-  _BS_KEEPALIVE=$!
-  trap 'kill "$_BS_KEEPALIVE" 2>/dev/null' EXIT
+  log_info "sudo authenticated."
+
+  export _SUDO_PASS
+
+  # shellcheck disable=SC2120
+  sudo() { command sudo -S -p "" "$@" < <(printf '%s\n' "$_SUDO_PASS"; cat); }
+  export -f sudo
 fi
 
 # --- Module map: name -> script ---
