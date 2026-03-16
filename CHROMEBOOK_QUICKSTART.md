@@ -104,17 +104,44 @@ Then open VS Code → install the **Remote - SSH** extension → connect to `mac
 
 ---
 
+## Running Claude Code on the Mac (from Chromebook)
+
+The setup script installs a `claude-mac` command that launches Claude Code on your Mac Mini over SSH — in a **persistent tmux session** that survives dropped connections.
+
+```bash
+claude-mac                  # start Claude Code on the Mac
+claude-mac mac --continue   # resume your last Claude conversation
+```
+
+What it does:
+- SSHes into `mac` (your configured host)
+- Checks if a Claude tmux session is already running
+- If yes — reattaches (picks up right where you left off)
+- If no — starts a new session and launches `claude`
+
+**Why tmux?** If your WiFi drops or you close the Chromebook lid, Claude keeps running on the Mac. Reopen the terminal, type `claude-mac`, and you're back in the same session.
+
+To install manually (if you didn't use the setup script):
+```bash
+curl -fsSL https://raw.githubusercontent.com/jeromebanks/machine-setup/main/clients/claude-remote.sh \
+  | sudo tee /usr/local/bin/claude-mac > /dev/null
+sudo chmod +x /usr/local/bin/claude-mac
+```
+
+---
+
 ## Useful Commands
 
 | Task | Command |
 |---|---|
 | SSH into Mac | `ssh mac` |
+| Run Claude Code on Mac | `claude-mac` |
+| Resume Claude after disconnect | `claude-mac` (reattaches tmux) |
 | Check Tailscale status | `tailscale status` |
 | See your Mac's Tailscale hostname | `tailscale status \| grep mac` |
 | VNC screen share | `vncviewer <hostname>:5900` |
 | Copy a file from Mac | `scp mac:~/path/to/file .` |
 | Copy a file to Mac | `scp ./file mac:~/path/to/dest` |
-| Run Claude Code on Mac | `ssh mac 'claude'` |
 
 ---
 

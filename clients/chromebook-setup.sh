@@ -89,19 +89,36 @@ else
   sudo apt-get install -y -qq tigervnc-viewer
 fi
 
-# --- Optional: Claude Code + OpenAI Codex ---
+# --- claude-mac command (runs Claude Code on the Mac via SSH) ---
+log "Installing claude-mac command..."
+CLAUDE_REMOTE_URL="https://raw.githubusercontent.com/jeromebanks/machine-setup/main/clients/claude-remote.sh"
+if command -v claude-mac &>/dev/null; then
+  ok "claude-mac already installed"
+else
+  curl -fsSL "$CLAUDE_REMOTE_URL" -o /tmp/claude-remote.sh
+  sudo install -m 755 /tmp/claude-remote.sh /usr/local/bin/claude-mac
+  rm /tmp/claude-remote.sh
+  ok "claude-mac installed — run 'claude-mac' to launch Claude Code on your Mac"
+fi
+
+# --- Optional: Claude Code + OpenAI Codex locally ---
 if command -v node &>/dev/null; then
-  read -r -p "Install Claude Code and OpenAI Codex CLI on this Chromebook? [y/N] " install_ai
+  read -r -p "Also install Claude Code and OpenAI Codex CLI locally on this Chromebook? [y/N] " install_ai
   if [[ "${install_ai,,}" == "y" ]]; then
     npm install -g @anthropic-ai/claude-code @openai/codex
-    ok "AI CLI tools installed"
+    ok "AI CLI tools installed locally"
   fi
 else
-  log "Node.js not found — skipping AI CLI tools (install nvm first if you want them)"
+  log "Node.js not found — skipping local AI CLI tools (install nvm first if you want them)"
 fi
 
 echo ""
 echo "=== Setup Complete ==="
-echo "Connect via SSH:  ssh mac"
-echo "Connect via VNC:  vncviewer $MAC_TAILSCALE_HOST:5900"
+echo ""
+echo "Connect via SSH:        ssh mac"
+echo "Run Claude on Mac:      claude-mac"
+echo "Connect via VNC:        vncviewer $MAC_TAILSCALE_HOST:5900"
+echo ""
+echo "Tip: 'claude-mac' launches Claude Code on your Mac Mini in a persistent"
+echo "     tmux session — safe to disconnect and reconnect anytime."
 echo ""
