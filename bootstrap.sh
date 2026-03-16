@@ -33,35 +33,29 @@ done
 
 export DRY_RUN SCRIPT_DIR
 
-# --- Sudo: ask once, stay elevated for the full run ---
-#
-# macOS defaults to per-TTY sudo tickets. Child processes spawned by tools like
-# brew (e.g. `installer`, cask scripts) run on different TTYs and don't inherit
-# the ticket, causing re-prompts. We fix this by writing a temporary sudoers
-# fragment that switches to a global (non-TTY) ticket for the duration of
-# bootstrap, combined with a background heartbeat that keeps it fresh.
-# The fragment is removed automatically when bootstrap exits.
+# --- Sudo keepalive: ask once, stay elevated for the full run ---
+# A background heartbeat refreshes the credential every 25 s so subsequent
+# sudo calls (e.g. cask pkg installers) don't re-prompt.
+# We capture the TTY explicitly so the background process refreshes the same
+# ticket that child processes (brew internals) will check.
 if [[ "$DRY_RUN" != "true" ]]; then
   log_info "Some steps require administrator privileges. You will be asked once."
   sudo -v || { log_error "sudo authentication failed — aborting."; exit 1; }
 
-  _BS_SUDOERS="/private/etc/sudoers.d/mac-setup-bootstrap"
-  # !tty_tickets  — credential is valid across all processes for this user
-  # timestamp_timeout=30 — expires 30 min after last use (keepalive prevents that)
-  if printf 'Defaults:%s !tty_tickets,timestamp_timeout=30\n' "$(whoami)" \
-       | sudo tee "$_BS_SUDOERS" > /dev/null 2>&1; then
-    sudo chmod 440 "$_BS_SUDOERS"
+  _BS_TTY="$(tty 2>/dev/null || true)"
+  if [[ -n "$_BS_TTY" ]]; then
+    (while kill -0 $$ 2>/dev/null; do
+      sudo -n true <"$_BS_TTY" 2>/dev/null || true
+      sleep 25
+    done) &
   else
-    log_warn "Could not write sudoers fragment — you may be prompted again during setup."
-    _BS_SUDOERS=""
+    (while kill -0 $$ 2>/dev/null; do
+      sudo -n true 2>/dev/null || true
+      sleep 25
+    done) &
   fi
-
-  # Refresh the credential every 25 s so it never expires mid-run
-  (while kill -0 $$ 2>/dev/null; do sudo -n true 2>/dev/null || true; sleep 25; done) &
   _BS_KEEPALIVE=$!
-
-  trap '[[ -n "${_BS_KEEPALIVE:-}" ]] && kill "$_BS_KEEPALIVE" 2>/dev/null
-        [[ -n "${_BS_SUDOERS:-}"   ]] && sudo rm -f "$_BS_SUDOERS" 2>/dev/null' EXIT
+  trap 'kill "$_BS_KEEPALIVE" 2>/dev/null' EXIT
 fi
 
 # --- Module map: name -> script ---
